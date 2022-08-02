@@ -22,6 +22,7 @@ try{
   await client.connect()
   const manufacturerCollection = client.db('manufacturer').collection('tools');
   const userCollection = client.db('manufacturer').collection('user');
+  const purchaseCollection = client.db('manufacturer').collection('purchase');
 
   app.put('/user/:email', async(req, res) => {
    const email = req.params.email;
@@ -49,6 +50,32 @@ try{
    const service = manufacturerCollection.find(query);
    const result = await service.toArray();
    res.send(result)
+  })
+
+  // get my orders 
+  app.get('/purchase', async(req, res) => {
+    const email = req.query.email
+    console.log('email is', email)
+    const query = {email: email}
+    const purchase = purchaseCollection.find(query)
+    const result = await purchase.toArray()
+    res.send(result) 
+  })
+
+  // post purchase details
+
+  app.post('/purchase', async(req, res) => {
+    const purchase = req.body;
+    const result = await purchaseCollection.insertOne(purchase)
+    res.send(result)
+  })
+
+  // delete order
+  app.delete('/purchase/:id', async(req, res) => {
+    const id = req.params.id;
+    const query = {_id:ObjectId(id)}
+    const result = await purchaseCollection.deleteOne(query)
+    res.send(result)
   })
 
 }
