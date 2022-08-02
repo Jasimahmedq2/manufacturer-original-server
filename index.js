@@ -3,7 +3,9 @@ const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
+
 
 
 app.use(cors())
@@ -19,7 +21,29 @@ async function run(){
 try{
   await client.connect()
   const manufacturerCollection = client.db('manufacturer').collection('tools');
+  const userCollection = client.db('manufacturer').collection('user');
 
+  app.put('/user/:email', async(req, res) => {
+   const email = req.params.email;
+   const user = req.body;
+   const filter = {email: email}
+   const options = { upsert: true };
+   const updateEmail = {
+    $set: user
+  };
+  const result = await userCollection.updateOne(filter, updateEmail, options);
+  const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+  res.send({result, token})
+  })
+
+ // specific id 
+ app.get('/service/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = {_id:ObjectId(id)}
+  const result = await manufacturerCollection.findOne(query)
+  res.send(result)
+ })
+  
   app.get('/service', async(req, res) => {
    const query = {};
    const service = manufacturerCollection.find(query);
