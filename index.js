@@ -88,6 +88,13 @@ try{
     res.send(result)
   })
 
+  // add new product
+  app.post('/service', async(req, res) => {
+    const product = req.body;
+    const result = await manufacturerCollection.insertOne(product)
+    res.send(result)
+  })
+
   // delete order
   app.delete('/purchase/:id', async(req, res) => {
     const id = req.params.id;
