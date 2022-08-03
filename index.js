@@ -23,6 +23,8 @@ try{
   const manufacturerCollection = client.db('manufacturer').collection('tools');
   const userCollection = client.db('manufacturer').collection('user');
   const purchaseCollection = client.db('manufacturer').collection('purchase');
+  const reviewCollection = client.db('manufacturer').collection('review');
+  
 
   app.put('/user/:email', async(req, res) => {
    const email = req.params.email;
@@ -62,11 +64,27 @@ try{
     res.send(result) 
   })
 
+  //get review
+
+  app.get('/review', async(req, res) => {
+    const query = {};
+    const cursor = reviewCollection.find(query);
+    const result = await cursor.toArray();
+    res.send(result)
+  })
+
   // post purchase details
 
   app.post('/purchase', async(req, res) => {
     const purchase = req.body;
     const result = await purchaseCollection.insertOne(purchase)
+    res.send(result)
+  })
+
+  // post review 
+  app.post('/review', async(req, res) => {
+    const review = req.body;
+    const result = await reviewCollection.insertOne(review)
     res.send(result)
   })
 
