@@ -39,6 +39,40 @@ try{
   res.send({result, token})
   })
 
+  app.put('/user/admin/:email', async(req, res) => {
+    const email = req.params.email;
+    console.log("email", email)
+    const filter = {email: email}
+    const updateEmail = {
+     $set: {
+      role: "admin"
+     }
+    }
+   const result = await userCollection.updateOne( filter,  updateEmail);
+   res.send(result)
+   });
+ 
+
+ app.get('/user', async(req, res) => {
+  const result = await userCollection.find().toArray()
+  res.send(result)
+ })
+
+ app.get('/admin/:email', async(req, res) => {
+  const email = req.params.email;
+  const query = {email: email}
+  const userData = await userCollection.findOne(query)
+   const isAdmin = userData.role === 'admin'
+   res.send({admin: isAdmin})
+ 
+ })
+
+ app.delete('/user/:email', async(req, res) => {
+  const email = req.params.email;
+  const result = await userCollection.deleteOne({email: email})
+  res.send(result)
+ })
+
  // specific id 
  app.get('/service/:id', async (req, res) => {
   const id = req.params.id;
@@ -53,8 +87,28 @@ try{
    const result = await service.toArray();
    res.send(result)
   })
+  
+  // app.put('/purchase/:id', async(req, res) => {
+  //   const updatedProduct = req.body
+  
+  //   const { updatedQuantity } = updatedProduct;
+  //   const id = req.params.id;
+  //   const query = { _id: ObjectId(id) };
+  //   const options = { upsert: true };
+
+  //   const updateProduct = {
+  //       $set: {
+  //         menimum: updatedQuantity
+  //       },
+  //   };
+
+  //   const result = await manufacturerCollection.updateOne(query, updateProduct, options);
+
+  //   res.send(result);
+  // });
 
   // get my orders 
+  
   app.get('/purchase', async(req, res) => {
     const email = req.query.email
     console.log('email is', email)
