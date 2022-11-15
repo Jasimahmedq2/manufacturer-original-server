@@ -134,6 +134,23 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/manageorder', async(req, res) => {
+      const result = await purchaseCollection.find().toArray()
+      res.send(result)
+    })
+
+    app.patch('/shipped/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: ObjectId(id)}
+      const updateDoc = {
+        $set: {
+          shipped: true
+        }
+      }
+      const result = await purchaseCollection.updateOne(filter, updateDoc)
+      res.send(result)
+    })
+
     app.get('/payment/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) }
