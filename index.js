@@ -129,15 +129,22 @@ async function run() {
       const email = req.query.email
       console.log('email is', email)
       const query = { email: email }
-      const purchase = purchaseCollection.find(query)
+      const purchase = purchaseCollection.find(query).sort({$natural:-1})
       const result = await purchase.toArray()
       res.send(result)
     })
 
     app.get('/manageorder', async(req, res) => {
-      const result = await purchaseCollection.find().toArray()
+      const result = await purchaseCollection.find().sort({$natural:-1}).toArray()
       res.send(result)
     })
+
+    // app.delete('/manageorder/:id', async(req, res) => {
+    //   const id = req.params.id;
+    //   const filter = {_id: ObjectId(id)}
+    //   const result = await purchaseCollection.deleteOne(filter)
+    //   res.send(result)
+    // })
 
     app.patch('/shipped/:id', async(req, res) => {
       const id = req.params.id;
@@ -191,6 +198,13 @@ async function run() {
 
     // delete order
     app.delete('/purchase/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) }
+      const result = await purchaseCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    app.delete('/manageorderdelete/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
       const result = await purchaseCollection.deleteOne(query)
