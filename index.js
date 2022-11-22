@@ -21,7 +21,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
-  console.log("authHeader", authHeader)
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) return res.sendStatus(401);
@@ -86,12 +85,12 @@ async function run() {
     });
 
 
-    app.get('/user', async (req, res) => {
+    app.get('/user', verifyJWT, async (req, res) => {
       const result = await userCollection.find().toArray()
       res.send(result)
     })
 
-    app.get('/admin/:email', async (req, res) => {
+    app.get('/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       const query = { email: email }
       const userData = await userCollection.findOne(query)
@@ -100,14 +99,14 @@ async function run() {
 
     })
 
-    app.delete('/user/:email', async (req, res) => {
+    app.delete('/user/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       const result = await userCollection.deleteOne({ email: email })
       res.send(result)
     })
 
     // specific id 
-    app.get('/service/:id', async (req, res) => {
+    app.get('/service/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
       const result = await manufacturerCollection.findOne(query)
@@ -142,7 +141,7 @@ async function run() {
 
     // get my orders 
 
-    app.get('/purchase', async (req, res) => {
+    app.get('/purchase', verifyJWT, async (req, res) => {
       const email = req.query.email
       console.log('email is', email)
       const query = { email: email }
@@ -151,7 +150,7 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/manageorder', async (req, res) => {
+    app.get('/manageorder', verifyJWT, async (req, res) => {
       const result = await purchaseCollection.find().sort({ $natural: -1 }).toArray()
       res.send(result)
     })
@@ -163,7 +162,7 @@ async function run() {
     //   res.send(result)
     // })
 
-    app.patch('/shipped/:id', async (req, res) => {
+    app.patch('/shipped/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) }
       const updateDoc = {
@@ -175,7 +174,7 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/payment/:id', async (req, res) => {
+    app.get('/payment/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) }
       const result = await purchaseCollection.findOne(filter)
@@ -184,7 +183,7 @@ async function run() {
 
     //get review
 
-    app.get('/review', async (req, res) => {
+    app.get('/review', verifyJWT, async (req, res) => {
       const query = {};
       const cursor = reviewCollection.find(query).sort({ $natural: -1 });
       const result = await cursor.toArray();
@@ -193,35 +192,35 @@ async function run() {
 
     // post purchase details
 
-    app.post('/purchase', async (req, res) => {
+    app.post('/purchase', verifyJWT, async (req, res) => {
       const purchase = req.body;
       const result = await purchaseCollection.insertOne(purchase)
       res.send(result)
     })
 
     // post review 
-    app.post('/review', async (req, res) => {
+    app.post('/review', verifyJWT, async (req, res) => {
       const review = req.body;
       const result = await reviewCollection.insertOne(review)
       res.send(result)
     })
 
     // add new product
-    app.post('/service', async (req, res) => {
+    app.post('/service', verifyJWT, async (req, res) => {
       const product = req.body;
       const result = await manufacturerCollection.insertOne(product)
       res.send(result)
     })
 
     // delete order
-    app.delete('/purchase/:id', async (req, res) => {
+    app.delete('/purchase/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
       const result = await purchaseCollection.deleteOne(query)
       res.send(result)
     })
 
-    app.delete('/manageorderdelete/:id', async (req, res) => {
+    app.delete('/manageorderdelete/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
       const result = await purchaseCollection.deleteOne(query)
@@ -229,7 +228,7 @@ async function run() {
     })
 
     // delete tools
-    app.delete('/service/:id', async (req, res) => {
+    app.delete('/service/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) }
       const result = await manufacturerCollection.deleteOne(query)
@@ -238,7 +237,7 @@ async function run() {
 
     // payment
 
-    app.patch('/payment/:id', async (req, res) => {
+    app.patch('/payment/:id', verifyJWT, async (req, res) => {
       const id = req.params.id
       const payment = req.body;
       console.log(payment)
