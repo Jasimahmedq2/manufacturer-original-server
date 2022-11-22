@@ -19,6 +19,21 @@ const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  console.log("authHeader", authHeader)
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) return res.sendStatus(403);
+    req.tokenData = decoded;
+    next();
+  });
+}
+
+
 
 async function run() {
   try {
@@ -51,7 +66,9 @@ async function run() {
         $set: user
       };
       const result = await userCollection.updateOne(filter, updateEmail, options);
+
       const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+
       res.send({ result, token })
     })
 
@@ -97,9 +114,9 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/service', async (req, res) => {
+    app.get('/service', verifyJWT, async (req, res) => {
       const query = {};
-      const service = manufacturerCollection.find(query).sort({$natural:-1});
+      const service = manufacturerCollection.find(query).sort({ $natural: -1 });
       const result = await service.toArray();
       res.send(result)
     })
@@ -129,13 +146,13 @@ async function run() {
       const email = req.query.email
       console.log('email is', email)
       const query = { email: email }
-      const purchase = purchaseCollection.find(query).sort({$natural:-1})
+      const purchase = purchaseCollection.find(query).sort({ $natural: -1 })
       const result = await purchase.toArray()
       res.send(result)
     })
 
-    app.get('/manageorder', async(req, res) => {
-      const result = await purchaseCollection.find().sort({$natural:-1}).toArray()
+    app.get('/manageorder', async (req, res) => {
+      const result = await purchaseCollection.find().sort({ $natural: -1 }).toArray()
       res.send(result)
     })
 
@@ -146,9 +163,9 @@ async function run() {
     //   res.send(result)
     // })
 
-    app.patch('/shipped/:id', async(req, res) => {
+    app.patch('/shipped/:id', async (req, res) => {
       const id = req.params.id;
-      const filter = {_id: ObjectId(id)}
+      const filter = { _id: ObjectId(id) }
       const updateDoc = {
         $set: {
           shipped: true
@@ -169,7 +186,7 @@ async function run() {
 
     app.get('/review', async (req, res) => {
       const query = {};
-      const cursor = reviewCollection.find(query).sort({$natural:-1});
+      const cursor = reviewCollection.find(query).sort({ $natural: -1 });
       const result = await cursor.toArray();
       res.send(result)
     })
@@ -221,20 +238,20 @@ async function run() {
 
     // payment
 
-    app.patch('/payment/:id', async(req, res) => {
-    const id = req.params.id
-    const payment = req.body;
-    console.log(payment)
-    const filter = {_id: ObjectId(id)}
-    const updatePurchase = {
-      $set: {
-        paid: true,
-        transactionId: payment.transactionId
+    app.patch('/payment/:id', async (req, res) => {
+      const id = req.params.id
+      const payment = req.body;
+      console.log(payment)
+      const filter = { _id: ObjectId(id) }
+      const updatePurchase = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId
+        }
       }
-    }
-    const inserted = await paymentCollection.insertOne(payment)
-    const result = await purchaseCollection.updateOne(filter, updatePurchase)
-    res.send(result)
+      const inserted = await paymentCollection.insertOne(payment)
+      const result = await purchaseCollection.updateOne(filter, updatePurchase)
+      res.send(result)
 
     })
 
