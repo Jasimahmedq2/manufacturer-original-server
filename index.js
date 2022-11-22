@@ -150,7 +150,7 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/manageorder', verifyJWT, async (req, res) => {
+    app.get('/manageorder',  async (req, res) => {
       const result = await purchaseCollection.find().sort({ $natural: -1 }).toArray()
       res.send(result)
     })
