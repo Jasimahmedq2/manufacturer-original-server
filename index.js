@@ -150,7 +150,7 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/manageorder', verifyJWT, async (req, res) => {
+    app.get('/manageorder', async (req, res) => {
       const result = await purchaseCollection.find().sort({ $natural: -1 }).toArray()
       res.send(result)
     })
@@ -199,7 +199,7 @@ async function run() {
     })
 
     // post review 
-    app.post('/review', verifyJWT, async (req, res) => {
+    app.post('/review', async (req, res) => {
       const review = req.body;
       const result = await reviewCollection.insertOne(review)
       res.send(result)
