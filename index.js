@@ -183,7 +183,7 @@ async function run() {
 
     //get review
 
-    app.get('/review', verifyJWT, async (req, res) => {
+    app.get('/review',  async (req, res) => {
       const query = {};
       const cursor = reviewCollection.find(query).sort({ $natural: -1 });
       const result = await cursor.toArray();
