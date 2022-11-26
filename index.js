@@ -150,7 +150,7 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/manageorder', async (req, res) => {
+    app.get('/manageorder', verifyJWT, async (req, res) => {
       const result = await purchaseCollection.find().sort({ $natural: -1 }).toArray()
       res.send(result)
     })
@@ -206,7 +206,7 @@ async function run() {
     })
 
     // add new product
-    app.post('/service', verifyJWT, async (req, res) => {
+    app.post('/service',  async (req, res) => {
       const product = req.body;
       const result = await manufacturerCollection.insertOne(product)
       res.send(result)
