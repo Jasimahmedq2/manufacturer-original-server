@@ -113,7 +113,7 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/service', verifyJWT, async (req, res) => {
+    app.get('/service', async (req, res) => {
       const query = {};
       const service = manufacturerCollection.find(query).sort({ $natural: -1 });
       const result = await service.toArray();
