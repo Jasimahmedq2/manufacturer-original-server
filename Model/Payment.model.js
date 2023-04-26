@@ -1,5 +1,5 @@
-const { Schema, Model } = require("mongoose");
-
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 const paymentSchema = new Schema(
   {
     user: {
@@ -13,4 +13,4 @@ const paymentSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = Model("Payment", paymentSchema);
+module.exports = mongoose.model("Payment", paymentSchema);

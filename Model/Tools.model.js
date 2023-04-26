@@ -1,4 +1,5 @@
-const { Schema, Model } = require("mongoose");
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const toolSchema = new Schema(
   {
@@ -17,4 +18,4 @@ const toolSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = Model("Tool", toolSchema);
+module.exports = mongoose.model("Tool", toolSchema);

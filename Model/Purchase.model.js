@@ -1,5 +1,5 @@
-const { Schema, Model } = require("mongoose");
-
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 const purchaseSchema = new Schema(
   {
     user: {
@@ -25,4 +25,4 @@ const purchaseSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = Model("Purchase", purchaseSchema);
+module.exports = mongoose.model("Purchase", purchaseSchema);
