@@ -1,3 +1,4 @@
+const PaymentModel = require("../Model/Payment.model");
 const PurchaseModel = require("../Model/Purchase.model");
 
 exports.purchaseFindByEmail = async (req, res) => {
@@ -29,7 +30,7 @@ exports.updateShippedController = async (req, res) => {
         shipped: true,
       },
     };
-    const result = await PurchaseModel.updateOne(id, updateDoc);
+    const result = await PurchaseModel.findByIdAndUpdate(id, updateDoc);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -48,11 +49,12 @@ exports.findPurchaseByIdController = async (req, res) => {
 
 exports.insertPurchaseController = async (req, res) => {
   try {
-    const newPurchase = new PurchaseModel(req.body)
-    await newPurchase.save()
-    res.status(200).json({message: "successfully insert purchase details"});
+    const newPurchase = new PurchaseModel(req.body);
+    await newPurchase.save();
+    res.status(200).json({ message: "successfully insert purchase details" });
   } catch (error) {
     res.status(500).json({ message: error.message });
+    console.log("error", error);
   }
 };
 
@@ -60,7 +62,7 @@ exports.DeletePurchaseController = async (req, res) => {
   try {
     const id = req.params.id;
     const result = await PurchaseModel.findByIdAndDelete(id);
-    res.status(200).send({message: "successfully deleted", result});
+    res.status(200).send({ message: "successfully deleted", result });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -70,7 +72,7 @@ exports.manageOrderDeleteController = async (req, res) => {
   try {
     const id = req.params.id;
     const result = await PurchaseModel.findByIdAndDelete(id);
-    res.status(200).json(result, {message: "successfully deleted"});
+    res.status(200).json(result, { message: "successfully deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -79,7 +81,7 @@ exports.manageOrderDeleteController = async (req, res) => {
 exports.purchaseDetailsUpdateController = async (req, res) => {
   try {
     const id = req.params.id;
-    const payment = req.body;
+    const payment = new PaymentModel(req.body);
     console.log(payment);
     const updatePurchase = {
       $set: {
@@ -87,8 +89,8 @@ exports.purchaseDetailsUpdateController = async (req, res) => {
         transactionId: payment.transactionId,
       },
     };
-    const inserted = await paymentCollection.insertOne(payment);
-    const result = await purchaseCollection.updateOne(id, updatePurchase);
+    const inserted = await payment.save();
+    const result = await PurchaseModel.findByIdAndUpdate(id, updatePurchase);
     res.send(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

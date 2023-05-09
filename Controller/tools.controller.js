@@ -32,8 +32,7 @@ exports.insertToolsProductController = async (req, res) => {
 exports.DeleteToolsManufacturerController = async (req, res) => {
   try {
     const id = req.params.id;
-    const query = { _id: ObjectId(id) };
-    const result = await ToolsModel.deleteOne(query);
+    const result = await ToolsModel.findByIdAndDelete(id);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

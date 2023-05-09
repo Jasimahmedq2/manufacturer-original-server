@@ -9,6 +9,7 @@ const reviewSchema = new Schema(
     name: String,
     email: String,
     description: String,
+    rate: Number,
   },
   { timestamps: true }
 );

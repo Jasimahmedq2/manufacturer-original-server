@@ -8,7 +8,7 @@ const purchaseSchema = new Schema(
     },
     name: String,
     email: String,
-    phone: Number,
+    phone: String,
     quantity: Number,
     address: String,
     price: Number,
