@@ -33,7 +33,7 @@ async function connectToDatabase() {
         useUnifiedTopology: true,
       }
     );
-    console.log("Connected to the database!");
+    console.log("yeee, Connected to the database!");
   } catch (error) {
     console.error("Error connecting to the database:", error.message);
   }
